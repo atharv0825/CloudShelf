@@ -1,0 +1,27 @@
+.main{
+    margin-top: 200px;
+}
+
+.feild_container button{
+    background-color: rgba(0,161,224,255);
+    color: white;
+    border-radius: 20px;
+    margin-top: 10px;
+}
+
+.feild_container button:hover{
+    background-color: rgb(1, 170, 255);
+    color: white;
+}
+
+.feild_container button:nth-child(2){
+    background-color: rgb(230, 15, 47);
+    color: white;
+    border-radius: 20px;
+    margin-top: 10px;
+}
+
+.feild_container button:nth-child(2):hover{
+    background-color: rgb(254, 36, 68);
+    color: white;
+}
