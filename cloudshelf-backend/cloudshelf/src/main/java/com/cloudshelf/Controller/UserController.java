@@ -4,6 +4,7 @@ import com.cloudshelf.Entity.User;
 import com.cloudshelf.Services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +45,17 @@ public class UserController {
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             throw new RuntimeException("File not uploaded"+e );
+        }
+    }
+
+    @DeleteMapping("/delete-image")
+    public ResponseEntity<String>deleteImage(@RequestParam String email,
+                                             @RequestParam String imageUrl){
+        try{
+            userServices.deleteUserImage(email , imageUrl);
+            return ResponseEntity.ok("Deleted image successfully");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting the image");
         }
     }
 

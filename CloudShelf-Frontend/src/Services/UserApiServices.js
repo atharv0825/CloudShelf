@@ -31,3 +31,27 @@ export const loginUser = async ({ email, password }) => {
         throw error;   // Let handleSubmit catch it
     }
 }
+
+export const getFiles = async (email) =>{
+    try{
+        const token = localStorage.getItem('token')
+        const response = await fetch(`http://localhost:909/cloudshelf/api/userdata?email=${encodeURIComponent(email)}`,{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}` 
+            }
+        })
+        if(!response.ok){
+            throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        const file = await response.json();
+        console.log(file);
+        return file;
+    }catch(error){
+        console.error("Error fetching user files:", error);
+        return [];
+    }
+
+}

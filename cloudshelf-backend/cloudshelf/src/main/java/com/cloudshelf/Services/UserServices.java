@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.cloudshelf.Entity.User;
+import com.cloudshelf.Exception.EmailAlreadyExistException;
+import com.cloudshelf.Exception.UserAlreadyExistException;
 import com.cloudshelf.Exception.UserNotFoundException;
 import com.cloudshelf.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,18 @@ public class UserServices {
     private PasswordEncoder passwordEncoder;
 
     public void registerUser(User user) {
+
+        // check whether email or userName exist before or not
+        Optional<User>userExist = userRepository.findByUserName(user.getUserName());
+        Optional<User>emailExist = userRepository.findByEmail(user.getEmail());
+        if(userExist.isPresent()){
+            throw new UserAlreadyExistException("Username already exist");
+        }
+        if(emailExist.isPresent()){
+            throw new EmailAlreadyExistException("Email already exist");
+        }
+
+
         // 1. Initialize empty image list
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("user");
@@ -91,5 +105,35 @@ public class UserServices {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public void deleteUserImage(String email , String imageURL){
+        // 1. Fetch User from database
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User not found with email " + email));
+
+        // 2. Extract s3 object key from image url
+        String s3Key = imageURL.substring(imageURL.indexOf(user.getUserName()));
+
+        // 3. Delete image from S3
+        if (s3Client.doesObjectExist(bucketName, s3Key)) {
+            s3Client.deleteObject(bucketName, s3Key);
+            System.out.println("Deleted from S3: " + s3Key);
+        } else {
+            System.out.println("Image not found in S3: " + s3Key);
+        }
+
+        // 4. Remove URL from user's imageUrls list
+        List<String> imageUrls = user.getImageUrls();
+        boolean removed = imageUrls.remove(imageURL);
+
+        if(removed){
+            user.setImageUrls(imageUrls);
+            userRepository.save(user);
+            System.out.println("Deleted URL from Mongo DB");
+        }
+        else{
+            System.out.println("Image URL Not found in Mongo DB");
+        }
     }
 }

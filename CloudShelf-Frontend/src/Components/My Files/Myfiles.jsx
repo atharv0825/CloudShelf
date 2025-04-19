@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './MyFiles.css'
+import { getFiles } from '../../Services/UserApiServices';
+
 const MyFiles = () => {
 
+    const [file, setfile] = useState([]);
 
+    useEffect(() => {
+        const email = localStorage.getItem('email')
+        getFiles(email).then(data => {
+            setfile(data);
+        })
+    }, []);
+
+    const handleDownload = (fileURL) => {
+        const link = document.createElement('a');   
+        link.href = fileURL;                       
+        link.download = '';                        
+        document.body.appendChild(link);           
+        link.click();                              
+        document.body.removeChild(link);
+    };
 
     return (
         <div className="container my-5">
@@ -13,46 +31,36 @@ const MyFiles = () => {
                 </div>
             </div>
 
-            <div className="row">
-                <div className="col-md-4 mb-4">
-                    <div className="mycard" style={{ backgroundImage: "url('https://picsum.photos/id/1/800/600')" }}>
-                        <h3>Random Card 1</h3>
-                        <p>This is a randomly generated mycard.</p>
+            < div className="row" >
+                {file.map((imageURL, index) => (
+
+                    <div className="col-md-4 mb-4" key={index}>
+                        <div className="mycard">
+
+                            {
+                                imageURL.toLowerCase().endsWith('.pdf') ? (
+                                    <img src="./src/assets/PDF image.png" width='50px' height='50' />
+                                ) : (
+                                    <img src={imageURL} />
+                                )
+                            }
+
+                            <div className="download-btn-container">
+                                <button
+                                    onClick={() => handleDownload(imageURL)}
+                                    className="download-btn"
+                                >
+                                    Download
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-4 mb-4">
-                    <div className="mycard" style={{ backgroundImage: "url('https://picsum.photos/id/2/800/600')" }}>
-                        <h3>Random Card 2</h3>
-                        <p>This is a randomly generated mycard.</p>
-                    </div>
-                </div>
-                <div className="col-md-4 mb-4">
-                    <div className="mycard" style={{ backgroundImage: "url('https://picsum.photos/id/3/800/600')" }}>
-                        <h3>Random Card 3</h3>
-                        <p>This is a randomly generated mycard.</p>
-                    </div>
-                </div>
-                <div className="col-md-4 mb-4">
-                    <div className="mycard" style={{ backgroundImage: "url('https://picsum.photos/id/3/800/600')" }}>
-                        <h3>Random Card 3</h3>
-                        <p>This is a randomly generated mycard.</p>
-                    </div>
-                </div>
-                <div className="col-md-4 mb-4">
-                    <div className="mycard" style={{ backgroundImage: "url('https://picsum.photos/id/3/800/600')" }}>
-                        <h3>Random Card 3</h3>
-                        <p>This is a randomly generated mycard.</p>
-                    </div>
-                </div>
-                <div className="col-md-4 mb-4">
-                    <div className="mycard" style={{ backgroundImage: "url('https://picsum.photos/id/3/800/600')" }}>
-                        <h3>Random Card 3</h3>
-                        <p>This is a randomly generated mycard.</p>
-                    </div>
-                </div>
+
+                )
+                )}
             </div>
 
-        </div>
+        </div >
     );
 }
 

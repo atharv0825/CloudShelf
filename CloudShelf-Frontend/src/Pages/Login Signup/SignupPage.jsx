@@ -22,8 +22,9 @@ const SignupPage = () => {
     
         try {
             const response = await registerUser(formData);
-    
-            if (response && response.ok) {  // safer check here
+            const data = await response.json();
+            console.log(data);
+            if (response.ok && data.code === 2000) {  
                 toast.success("User Registered Successfully!", {
                     position: "top-left",
                     autoClose: 3000,
@@ -31,7 +32,18 @@ const SignupPage = () => {
                 setTimeout(() => {
                     window.location.href = '/login';
                 }, 3000);
-            } else {
+            } else if(data.code === 1001){
+                toast.error("Username already exists! Choose a new one.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            }else if (data.code === 1002) {
+                toast.error("Email already registered! Try logging in.", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            }
+            else {
                 toast.error("Registration Failed. Please try again.", {
                     position: "top-right",
                     autoClose: 3000,
@@ -77,6 +89,7 @@ const SignupPage = () => {
                                         id="username"
                                         className="form-control form-control-lg fs-6"
                                         name="userName"
+                                        placeholder='Enter Unique Username'
                                         onChange={handleChange}
                                     />
                                     <label className="form-label" htmlFor="form2Example18"  >Name</label>

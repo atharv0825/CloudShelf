@@ -75,7 +75,11 @@ const ImageUpload = () => {
                         marginTop: '85px'
                     }
                 })
+                setFileName("No File Chose");
+                setFile(null);
+                setUploadStatus(null);
                 setUploadStatus("File uploaded successfully!");
+
             } else {
                 toast.info("File upload failed", {
                     position: "top-right",
@@ -90,7 +94,7 @@ const ImageUpload = () => {
             console.error('File upload failed', error);
         }
 
-        setIsUploading(false); 
+        setIsUploading(false);
     };
 
     // Handle Clear button
