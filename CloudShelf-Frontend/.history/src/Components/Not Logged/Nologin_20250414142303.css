@@ -1,0 +1,67 @@
+.gradient-text {
+    background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #facc15, #ff6ec4);
+    background-size: 1000% 1000%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+
+.container_image {
+    width: 90vw;
+    overflow-x: hidden;
+    margin: 20px auto;
+}
+
+.image-wrapper {
+    position: relative;
+}
+
+.image-row {
+    display: flex;
+    transition: filter 0.3s ease;
+}
+
+/* Blur effect on hover */
+.image-wrapper:hover .image-row {
+    filter: blur(5px);
+}
+
+/* Hidden text by default */
+.image-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);  /* Semi-transparent dark background */
+    padding: 20px 30px;
+    border-radius: 12px;
+    display: none;
+    color: white;
+}
+
+/* Show text on hover */
+.image-wrapper:hover .image-text {
+    display: block;
+}
+
+.image-row img {
+    width: 300px;
+    height: 500px;
+    object-fit: cover;
+}

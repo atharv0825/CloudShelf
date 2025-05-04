@@ -1,0 +1,81 @@
+import React, { useEffect, useState } from 'react';
+import './MyFiles.css'
+import { deleteImage, getFiles } from '../../Services/UserApiServices';
+
+const MyFiles = () => {
+
+    const [file, setfile] = useState([]);
+
+    useEffect(() => {
+        const email = localStorage.getItem('email')
+        getFiles(email).then(data => {
+            setfile(data);
+        })
+    }, []);
+
+    const handleDownload = (fileURL) => {
+        const link = document.createElement('a');
+        link.href = fileURL;
+        link.download = '';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleDelete = (imageURL) => {
+        const response = deleteImage(imageURL);
+        if(response.da)
+    }
+
+    return (
+        <div className="container my-5">
+            <div className="row text-center mb-5">
+                <div className="col">
+                    <h2 className="display-4 fw-bold gradient-text">Your Cloud Shelf Awaits</h2>
+                    <p className="text-muted">Access, manage, and explore your files with ease</p>
+                </div>
+            </div>
+
+            < div className="row" >
+                {file.map((imageURL, index) => (
+
+                    <div className="col-md-4 mb-4" key={index}>
+                        <div className="mycard">
+
+                            <div className="delete-btn-container">
+                                <button
+                                    onClick={() => handleDelete(imageURL)}
+                                    className="delete-btn"
+                                >
+                                    <i className="bi bi-trash"></i>
+                                </button>
+                            </div>
+
+                            {
+                                imageURL.toLowerCase().endsWith('.pdf') ? (
+                                    <img src="./src/assets/PDF image.png" width='50px' height='50' />
+                                ) : (
+                                    <img src={imageURL} />
+                                )
+                            }
+
+                            <div className="download-btn-container">
+                                <button
+                                    onClick={() => handleDownload(imageURL)}
+                                    className="download-btn"
+                                >
+                                    Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                )
+                )}
+            </div>
+
+        </div >
+    );
+}
+
+export default MyFiles;

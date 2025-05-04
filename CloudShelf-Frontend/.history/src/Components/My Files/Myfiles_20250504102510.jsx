@@ -1,0 +1,124 @@
+import React, { useEffect, useState } from 'react';
+import './MyFiles.css'
+import { deleteImage, getFiles, getUsername } from '../../Services/UserApiServices';
+import { toast } from 'react-toastify';
+
+const MyFiles = () => {
+
+    const [file, setFile] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const email = localStorage.getItem("email");
+            setEmailID(email);
+    
+            try {
+                const username = await getUsername(email); 
+                setName(username);
+            } catch (error) {
+                console.error("Failed to fetch username", error);
+            }
+    
+            try {
+                const data = await getFiles(email);
+                setFile(data);
+            } catch (error) {
+                console.error("Failed to fetch files", error);
+            }
+        };
+    
+        fetchData();
+    }, []);
+
+    const handleDownload = (fileURL) => {
+        const link = document.createElement('a');
+        link.href = fileURL;
+        link.download = '';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleDelete = async (imageURL) => {
+        try {
+            const response = await deleteImage(imageURL);  
+    
+            if (response.status === 200) {
+                toast.success("File deleted successfully!", {
+                    position: "top-right",
+                    style: {
+                        marginTop: '85px'
+                    }
+                });
+            } else {
+                toast.error("File delete failed", {
+                    position: "top-right",
+                    style: {
+                        marginTop: '85px'
+                    }
+                });
+            }
+    
+        } catch (error) {
+            toast.error("An error occurred while deleting the file!", {
+                position: "top-right",
+                style: {
+                    marginTop: '85px'
+                }
+            });
+            console.error("Delete error:", error);
+        }
+    }
+
+    return (
+        <div className="container my-5">
+            <div className="row text-center mb-5">
+                <div className="col">
+                    <h2 className="display-4 fw-bold gradient-text">Your Cloud Shelf Awaits</h2>
+                    <p className="text-muted">Access, manage, and explore your files with ease</p>
+                </div>
+            </div>
+
+            < div className="row" >
+                {file.map((imageURL, index) => (
+
+                    <div className="col-md-4 mb-4" key={index}>
+                        <div className="mycard">
+
+                            <div className="delete-btn-container">
+                                <button
+                                    onClick={() => handleDelete(imageURL)}
+                                    className="delete-btn"
+                                >
+                                    <i className="bi bi-trash"></i>
+                                </button>
+                            </div>
+
+                            {
+                                imageURL.toLowerCase().endsWith('.pdf') ? (
+                                    <img src="./src/assets/PDF image.png" width='50px' height='50' />
+                                ) : (
+                                    <img src={imageURL} />
+                                )
+                            }
+
+                            <div className="download-btn-container">
+                                <button
+                                    onClick={() => handleDownload(imageURL)}
+                                    className="download-btn"
+                                >
+                                    Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                )
+                )}
+            </div>
+
+        </div >
+    );
+}
+
+export default MyFiles;
